@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "./UserContext";
 import { Link } from "react-router-dom";
 
-//sets my header
+// sets the Header
 
 const Header = () => {
-  let user = JSON.parse(localStorage.getItem("user"));
+  let [user] = useContext(UserContext);
   return (
     <header>
       <div className="wrap header--flex">

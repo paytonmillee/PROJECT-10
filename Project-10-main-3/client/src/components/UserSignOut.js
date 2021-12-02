@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "./UserContext";
 import { Redirect } from "react-router-dom";
 
-//This will end up signing out the user and redirects them back to the home screen
+//Signs out user and will take them to the homescreen
 
 const UserSignOut = () => {
-  localStorage.setItem("user", null);
+  let [user, setUser] = useContext(UserContext);
+  React.useEffect(() => {
+    if (user) {
+      setUser(null);
+    }
+  }, [user, setUser]);
   return <Redirect to={"/"} />;
 };
 

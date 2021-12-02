@@ -18,8 +18,6 @@ router.get("/", authenticateUser, (req, res, next) => {
 });
 
 router.post("/", (req, res) => {
-  const user = req.body;
-
   User.create(req.body)
     .then(res.location("/"))
     .then((userInfo) => {
@@ -27,7 +25,6 @@ router.post("/", (req, res) => {
       res.end();
     })
     .catch((error) => {
-      console.log(error);
       res.status(400).json(error);
       res.end();
     });

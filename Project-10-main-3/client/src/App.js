@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
+import { UserProvider } from "./components/UserContext";
 
 //import routes
 
@@ -16,18 +17,32 @@ import PrivateRoutes from "./components/PrivateRoutes";
 
 const App = () => {
   return (
-    <Router>
-      <Route exact path="/" component={Courses} />
-      <Route exact path="/courses/:id" component={CourseDetail} />
-      <Route exact path="/signin" component={UserSignIn} />
-      <Route exact path="/signup" component={UserSignUp} />
-      <Route exact path="/signout" component={UserSignOut} />
-      <PrivateRoutes>
-        <Route exact path="/courses/create" component={CreateCourse} />
-        <Route exact path="/courses/:id/update" component={UpdateCourse} />
-      </PrivateRoutes>
-      <Redirect from="*" to="/" />
-    </Router>
+    <UserProvider>
+      <Router>
+        <Route exact path="/">
+          <Courses />
+        </Route>
+        <Route exact path="/courses/:id">
+          <CourseDetail />
+        </Route>
+        <PrivateRoutes exact path="/courses/create">
+          <CreateCourse />
+        </PrivateRoutes>
+        <PrivateRoutes exact path="/courses/:id/update">
+          <UpdateCourse />
+        </PrivateRoutes>
+        <Route exact path="/signup">
+          <UserSignUp />
+        </Route>
+        <Route exact path="/signout">
+          <UserSignOut />
+        </Route>
+        <Route exact path="/signin">
+          <UserSignIn />
+        </Route>
+        <Redirect from="*" to="/" />
+      </Router>
+    </UserProvider>
   );
 };
 

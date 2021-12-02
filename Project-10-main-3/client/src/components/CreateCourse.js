@@ -1,25 +1,21 @@
-import React from "react";
-import Header from "./Header";
+import React, { useContext } from "react";
+import { UserContext } from "./UserContext";
 import { useHistory } from "react-router-dom";
 
 const CreateCourse = () => {
+  let [user] = useContext(UserContext);
   let history = useHistory();
-  let user = JSON.parse(localStorage.getItem("user"));
   let [errors, setErrors] = React.useState(null);
   let [title, setTitle] = React.useState("");
   let [description, setDescription] = React.useState("");
   let [estimatedTime, setEstimatedTime] = React.useState("");
   let [materialsNeeded, setMaterialsNeeded] = React.useState("");
 
-  //This variable creates the course and fetches the api
+  // create the course and fetch the api
 
   const createCourseData = (e) => {
     e.preventDefault();
     setErrors(null);
-
-    if (!user) {
-      return "You must be signed in to create a course";
-    }
 
     fetch(`http://localhost:5000/api/courses`, {
       method: "POST",
@@ -41,17 +37,18 @@ const CreateCourse = () => {
         return res.json();
       })
       .then((course) => {
+        if (course.errors) {
+          return setErrors(course.errors);
+        }
         history.push(`/courses/${course.id}`);
       })
       .catch((error) => {
-        console.log(error);
         setErrors(error);
       });
   };
 
   return (
     <div>
-      <Header />
       <main>
         <div className="wrap">
           <h2>Create Course</h2>
@@ -60,13 +57,15 @@ const CreateCourse = () => {
             <div className="validation--errors">
               <h3>Validation Errors</h3>
               <ul>
-                <li>Please provide a value for "Title"</li>
-                <li>Please provide a value for "Description"</li>
+                {/* map errors */}
+                {errors.map((error, index) => {
+                  return <li key={index}>{error.message}</li>;
+                })}
               </ul>
             </div>
           )}
 
-          {/* creates a course when submitted */}
+          {/* Createsa course when it is submitted */}
           <form
             onSubmit={(e) => {
               createCourseData(e);
@@ -84,10 +83,6 @@ const CreateCourse = () => {
                     setTitle(e.target.value);
                   }}
                 />
-
-                <p>
-                  By {user.firstName} {user.lastName}
-                </p>
 
                 <label htmlFor="courseDescription">Course Description</label>
                 <textarea

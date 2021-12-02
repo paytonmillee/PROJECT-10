@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { Course, User } = require("../models");
 const { authenticateUser } = require("../middleware/auth-users");
-
+//Gets user to home
 router.get("/", (req, res) => {
   Course.findAll({
     include: [
@@ -12,12 +12,10 @@ router.get("/", (req, res) => {
     ],
   })
     .then((data) => {
-      console.log(data);
       res.status(200);
       res.json(data);
     })
     .catch((error) => {
-      console.log(error);
       res.status(400).json(error);
     });
 });
@@ -79,7 +77,7 @@ router.put("/:id", authenticateUser, function (req, res, next) {
     });
 });
 
-//delete course
+//deletes the  course
 router.delete("/:id", authenticateUser, function (req, res, next) {
   Course.findByPk(req.params.id)
     .then((course) => {

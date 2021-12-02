@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "./UserContext";
 import Header from "./Header";
-import { Link } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
+
+// setting the courses and fetch the api
 
 const Courses = () => {
+  let [user] = useContext(UserContext);
   let [courses, setCourses] = React.useState(null);
-  // useEffect allows us to run the app when the component is loaded into the DOM
+  let { id } = useParams();
+  let history = useHistory();
+  // allowing to run things when component is loaded into the DOM
   React.useEffect(() => {
     getCourses();
   }, []);
@@ -15,26 +21,31 @@ const Courses = () => {
       mode: "cors",
       cache: "no-cache",
       headers: {
-        Authorization: "Basic " + btoa("john@smith.com:password"),
         "Content-Type": "application/json",
       },
     })
       .then((res) => {
-        console.log(res);
         return res.json();
       })
       .then((courses) => {
-        console.log(courses);
+        // set data in state using React.useState()
+
         setCourses(courses);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(
+        (error) => {
+          history.push("/");
+          return () => {
+            setCourses(null);
+          };
+        },
+        [history, id]
+      );
   };
 
   return (
     <div id="root">
-      <Header />
+      <Header user={user} />
       <main>
         <div className="wrap main--grid">
           {courses &&

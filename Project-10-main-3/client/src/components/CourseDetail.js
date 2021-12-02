@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "./UserContext";
 import { Link, useParams, useHistory } from "react-router-dom";
 
 import Header from "./Header";
 const ReactMarkdown = require("react-markdown");
 
+//get'ting course details and fetchng the api
+
 const CourseDetail = () => {
+  let [user] = useContext(UserContext);
   let { id } = useParams();
   let history = useHistory();
-  let user = JSON.parse(localStorage.getItem("user"));
   let [course, setCourse] = React.useState(null);
 
   React.useEffect(() => {
@@ -20,18 +23,20 @@ const CourseDetail = () => {
       },
     })
       .then((res) => {
-        console.log(res);
         return res.json();
       })
       .then((course) => {
-        // set data in state by using React.useState()
-        console.log(course);
+        // setting the data in state using React.useState()
+
         setCourse(course);
       })
       .catch((error) => {
-        console.log(error);
+        history.push("/");
       });
-  }, [id]);
+    return () => {
+      setCourse(null);
+    };
+  }, [id, history]);
 
   const deleteCourse = () => {
     if (!user) {
@@ -50,14 +55,12 @@ const CourseDetail = () => {
       .then((course) => {
         history.push("/");
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
-  //update course page and delete button.
+  //links to the update course page and activates the "Delete" button.
   return (
     <div id="root">
-      <Header />
+      <Header user={user} />
       <main>
         <div className="actions--bar">
           <div className="wrap">
@@ -95,11 +98,9 @@ const CourseDetail = () => {
                 <div>
                   <h3 className="course--detail--title">Course</h3>
                   <h4 className="course--name">{course.title}</h4>
-                  {course.User && (
-                    <p>
-                      By {course.User.firstName} {course.User.lastName}
-                    </p>
-                  )}
+                  <p>
+                    By {course.User.firstName} {course.User.lastName}
+                  </p>
                   <ReactMarkdown children={course.description} />
                 </div>
                 <div>

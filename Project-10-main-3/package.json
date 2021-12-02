@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "cors": "^2.8.5",
-    "react-markdown": "^6.0.2"
-  }
-}

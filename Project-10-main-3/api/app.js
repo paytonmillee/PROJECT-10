@@ -1,6 +1,6 @@
 "use strict";
 
-// loading the modules
+// load modules
 const express = require("express");
 const morgan = require("morgan");
 const { sequelize } = require("./models/index");
@@ -8,21 +8,21 @@ const courseRouter = require("./routes/courses");
 const userRouter = require("./routes/user");
 var cors = require("cors");
 
-// the variable to enable the global error logging
+// variable to enable global error logging
 const enableGlobalErrorLogging =
   process.env.ENABLE_GLOBAL_ERROR_LOGGING === "true";
 
-// creating the express app
+// create the Express app
 const app = express();
 app.use(cors());
 app.disable("etag");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// setup morgan (gives us http request logging)
+// setup morgan which gives us http request logging
 app.use(morgan("dev"));
 
-//friendly greeting for the root route
+// setup a friendly greeting for the root route
 app.get("/", (req, res) => {
   res.json({
     message: "Welcome to the REST API project!",
@@ -33,28 +33,22 @@ app.use("/api/courses", courseRouter);
 
 sequelize
   .authenticate()
-  .then(() => {
-    console.log("Connection has been established successfully.");
-  })
+  .then(() => {})
   .catch((error) => {
     console.error("Unable to connect to the database:", err);
   });
 sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log(`Databases have synced`);
-  })
-  .catch((error) => {
-    console.log(`There was an error syncing the database: ${error}`);
-  });
-// this will send a 404 if no other route matches
+  .sync()
+  .then(() => {})
+  .catch((error) => {});
+// this will send a 404 message if no other route matched
 app.use((req, res) => {
   res.status(404).json({
     message: "Route Not Found",
   });
 });
 
-// This will setup a global error
+// This will setup a global error handler
 app.use((err, req, res, next) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
@@ -66,10 +60,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// setting the port
+// set the port
 app.set("port", process.env.PORT || 5000);
 
-// listening to the port
-const server = app.listen(app.get("port"), () => {
-  console.log(`Express server is listening on port ${server.address().port}`);
-});
+// start listening on the port
+const server = app.listen(app.get("port"), () => {});

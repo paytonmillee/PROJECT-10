@@ -1,27 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "./UserContext";
 import Header from "./Header";
 import { Link, useHistory } from "react-router-dom";
 
 const UserSignUp = () => {
+  let [user, setUser] = useContext(UserContext);
   let history = useHistory();
   let [firstName, setFirstName] = React.useState("");
   let [lastName, setLastName] = React.useState("");
   let [email, setEmail] = React.useState("");
   let [password, setPassword] = React.useState("");
   let [confirmPassword, setConfirmPassword] = React.useState("");
+  let [errors, setErrors] = React.useState("");
 
   const signUp = async (e) => {
     e.preventDefault();
-    // confirming if passwords match
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      return alert("All fields are required");
-    }
-
-    if (password !== confirmPassword) {
-      return alert("Passwords do not match");
-    }
-
+    // calling the api to create user
     fetch(`http://localhost:5000/api/users`, {
       method: "POST",
       mode: "cors",
@@ -37,38 +32,40 @@ const UserSignUp = () => {
       }),
     })
       .then((res) => {
-        console.log(res);
         return res.json();
       })
-
-      // if successfull persist user and push user to index page
-
       .then((userData) => {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: userData.id,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            email: userData.emailAddress,
-            password: password,
-          })
-        );
+        if (userData.errors) {
+          return setErrors(userData.errors);
+        }
+        setUser({
+          id: userData.id,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.emailAddress,
+          password: password,
+        });
         history.push("/");
       })
-
-      // else show the error
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
   return (
     <div id="root">
-      <Header />
+      <Header user={user} />
       <main>
         <div className="form--centered">
           <h2>Sign Up</h2>
-
+          {errors && (
+            <div className="validation--errors">
+              <h3>Validation Errors</h3>
+              <ul>
+                {/* map errors */}
+                {errors.map((error) => {
+                  return <li>{error.message}</li>;
+                })}
+              </ul>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               signUp(e);
@@ -79,7 +76,7 @@ const UserSignUp = () => {
               id="firstName"
               name="firstName"
               type="text"
-              requried={true}
+              required={true}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
@@ -88,7 +85,7 @@ const UserSignUp = () => {
               id="lastName"
               name="lastName"
               type="text"
-              requried={true}
+              required={true}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
@@ -99,13 +96,13 @@ const UserSignUp = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              requried={true}
+              required={true}
             />
             <label htmlFor="password">Password</label>
             <input
               minLength="6"
               id="password"
-              requried={true}
+              required={true}
               name="password"
               type="password"
               value={password}
@@ -118,7 +115,7 @@ const UserSignUp = () => {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              requried={true}
+              required={true}
             />
             <button className="button" type="submit">
               Sign Up
@@ -138,8 +135,8 @@ const UserSignUp = () => {
           </p>
         </div>
       </main>
+      let error = error.length ? : return
     </div>
   );
 };
-
 export default UserSignUp;

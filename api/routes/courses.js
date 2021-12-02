@@ -53,11 +53,6 @@ router.post("/", authenticateUser, (req, res) => {
 });
 
 router.put("/:id", authenticateUser, function (req, res, next) {
-  if (!req.body.title || !req.body.description) {
-    res.status(400);
-    res.json({ error: "you must supply a title or user" });
-    return;
-  }
   Course.findByPk(req.params.id)
     .then(function (course) {
       course
@@ -67,11 +62,13 @@ router.put("/:id", authenticateUser, function (req, res, next) {
           res.status(204).json(course).end();
         })
         .catch((error) => {
+          console.log("UPDATE ERROR ", error);
           res.status(400);
           res.json(error).end();
         });
     })
     .catch((error) => {
+      console.log("PK ERROR ", error);
       res.status(400);
       res.json(error).end();
     });
